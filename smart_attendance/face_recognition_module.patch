@@ -1,0 +1,81 @@
+
+---
+ face_recognition/README.md            | 15 +++++++++++++++
+ face_recognition/__init__.py          |  2 ++
+ face_recognition/utils.py             | 24 ++++++++++++++++++++++++
+ face_recognition/requirements_face.txt|  6 ++++++
+ 4 files changed, 47 insertions(+)
+ create mode 100644 face_recognition/README.md
+ create mode 100644 face_recognition/__init__.py
+ create mode 100644 face_recognition/utils.py
+ create mode 100644 face_recognition/requirements_face.txt
+
+diff --git a/face_recognition/README.md b/face_recognition/README.md
+new file mode 100644
+index 0000000..1111111
+--- /dev/null
++++ b/face_recognition/README.md
+@@
++# Face Recognition Module
++
++Install requirements:
++
++python -m venv venv
++venv\\Scripts\\activate
++pip install -r requirements_face.txt
++
++Prepare known faces:
++- Create directories under `known_faces/` named after each student ID (or roll no)
++- Put 1-5 clear face images (frontal) in each folder.
++
++Rebuild encodings:
++python -c "from face_recognition.face_recog import encode_known_faces; encode_known_faces(force_rebuild=True)"
++
+diff --git a/face_recognition/__init__.py b/face_recognition/__init__.py
+new file mode 100644
+index 0000000..2222222
+--- /dev/null
++++ b/face_recognition/__init__.py
+@@
++# face_recognition/__init__.py
++from .api import face_api
+diff --git a/face_recognition/utils.py b/face_recognition/utils.py
+new file mode 100644
+index 0000000..3333333
+--- /dev/null
++++ b/face_recognition/utils.py
+@@
++# face_recognition/utils.py
++import os, pickle
++from typing import Dict, List
++
++BASE_DIR = os.path.dirname(__file__)
++ENCODINGS_PATH = os.path.join(BASE_DIR, "encodings", "encodings.pickle")
++KNOWN_DIR = os.path.join(BASE_DIR, "known_faces")
++
++os.makedirs(os.path.dirname(ENCODINGS_PATH), exist_ok=True)
++os.makedirs(KNOWN_DIR, exist_ok=True)
++
++def save_encodings(data: Dict[str, List[float]]):
++    with open(ENCODINGS_PATH, "wb") as f:
++        pickle.dump(data, f)
++
++def load_encodings():
++    if not os.path.exists(ENCODINGS_PATH):
++        return {}
++    with open(ENCODINGS_PATH, "rb") as f:
++        return pickle.load(f)
+diff --git a/face_recognition/requirements_face.txt b/face_recognition/requirements_face.txt
+new file mode 100644
+index 0000000..4444444
+--- /dev/null
++++ b/face_recognition/requirements_face.txt
+@@
++face_recognition==1.3.0
++opencv-python==4.8.0.74
++numpy>=1.23
++flask>=2.0
++Pillow
++python-dotenv
+-- 
+2.34.1
