@@ -88,3 +88,14 @@ class _TeacherHomePageState extends State<TeacherHomePage> {
     );
   }
 }
+ElevatedButton(
+  onPressed: () {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => AttendanceChartPage(classId: 1), // pass classId dynamically
+      ),
+    );
+  },
+  child: Text("Show Attendance Record"),
+)
