@@ -1,5 +1,8 @@
 // lib/screens/login_page.dart
 import 'package:flutter/material.dart';
+import 'package:smart_attendance/screens/admin/admin_page.dart';
+import 'package:smart_attendance/screens/student/student_home.dart';
+import 'package:smart_attendance/screens/teacher/teacher_home.dart';
 import '../widgets/role_card.dart';
 import '../theme.dart';
 
@@ -56,19 +59,45 @@ class _LoginPageState extends State<LoginPage> {
           studentSectionController.text.isNotEmpty &&
           studentDeptController.text.isNotEmpty;
 
-      if (valid) Navigator.pushReplacementNamed(context, '/student');
+      if (valid) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => StudentHomePage(),
+          ),
+        );
+      }
+      
     } else if (selectedRole == 'Teacher') {
       valid = teacherNameController.text.isNotEmpty &&
           teacherDeptController.text.isNotEmpty &&
           teacherIdController.text.isNotEmpty;
 
-      if (valid) Navigator.pushReplacementNamed(context, '/teacher');
+      if (valid) {
+  Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (context) => TeacherHomePage(
+        teacherName: teacherNameController.text,
+      ),
+    ),
+  );
+}
+
     } else if (selectedRole == 'Administrator') {
       valid = adminNameController.text.isNotEmpty &&
           adminDeptController.text.isNotEmpty &&
           adminIdController.text.isNotEmpty;
 
-      if (valid) Navigator.pushReplacementNamed(context, '/admin');
+      if (valid) {
+  Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (context) => AdminPage(),
+    ),
+  );
+}
+
     }
 
     if (!valid) {

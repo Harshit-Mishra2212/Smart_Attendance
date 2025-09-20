@@ -2,7 +2,8 @@
 import 'package:flutter/material.dart';
 import 'screens/login_page.dart';
 import 'screens/student/student_home.dart';
-import 'screens/teacher/teacher_home.dart'; // ✅ corrected path
+import 'screens/teacher/teacher_home.dart'; 
+
 import 'screens/admin/admin_page.dart';
 import 'theme.dart';
 
