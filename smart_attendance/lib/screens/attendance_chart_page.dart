@@ -11,19 +11,17 @@ class AttendanceChartPage extends StatefulWidget {
   _AttendanceChartPageState createState() => _AttendanceChartPageState();
 }
 
-class _AttendanceChartPageState extends State<AttendanceChartPage> {
-  List<dynamic> attendanceData = [];
-
-  Future<void> fetchAttendance() async {
-    final response = await http.get(
-      Uri.parse("http://YOUR_SERVER_IP/get_attendance.php?class_id=${widget.classId}")
-    );
-    if (response.statusCode == 200) {
-      setState(() {
-        attendanceData = json.decode(response.body);
-      });
-    }
+Future<void> fetchAttendance() async {
+  final response = await http.get(
+    Uri.parse("http://YOUR_SERVER_IP:5000/get_attendance?class_id=${widget.classId}")
+  );
+  if (response.statusCode == 200) {
+    setState(() {
+      attendanceData = json.decode(response.body);
+    });
   }
+}
+
 
   @override
   void initState() {
