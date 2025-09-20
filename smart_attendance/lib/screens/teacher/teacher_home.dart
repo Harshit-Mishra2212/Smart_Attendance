@@ -46,6 +46,12 @@ class _TeacherHomePageState extends State<TeacherHomePage> {
         title: Text("Welcome, ${widget.teacherName}"),
         backgroundColor: const Color(0xFF3B82F6),
         elevation: 2,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.pop(context); // Go back to login/previous screen
+          },
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),

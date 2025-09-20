@@ -1,6 +1,9 @@
-// lib/screens/teacher/session_page.dart
+import 'dart:async';
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:qr_flutter/qr_flutter.dart';
 
 class SessionPage extends StatefulWidget {
   final String className;
@@ -13,6 +16,14 @@ class SessionPage extends StatefulWidget {
 class _SessionPageState extends State<SessionPage> {
   DateTime selectedDate = DateTime.now();
 
+  // Store generated integers
+  late List<int> randomIntegers;
+  int currentIndex = 0;
+  Timer? qrTimer;
+
+  // Link for QR (static for one session)
+  final String baseLink = "https://smart-attendance.app/session";
+
   void _pickDate() async {
     final DateTime? picked = await showDatePicker(
       context: context,
@@ -20,13 +31,12 @@ class _SessionPageState extends State<SessionPage> {
       firstDate: DateTime(2023, 1),
       lastDate: DateTime(2100),
       builder: (context, child) {
-        // Modern themed calendar
         return Theme(
           data: Theme.of(context).copyWith(
             colorScheme: ColorScheme.light(
-              primary: const Color(0xFF3B82F6), // header background
-              onPrimary: Colors.white, // header text color
-              onSurface: Colors.black, // body text
+              primary: const Color(0xFF3B82F6),
+              onPrimary: Colors.white,
+              onSurface: Colors.black,
             ),
             textButtonTheme: TextButtonThemeData(
               style: TextButton.styleFrom(
@@ -46,12 +56,86 @@ class _SessionPageState extends State<SessionPage> {
     }
   }
 
+  /// Start attendance session -> open popup with QR
   void _startAttendance() {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text("Start Attendance Session (QR flow placeholder)"),
-      ),
+    // Generate 20 random integers
+    final random = Random();
+    randomIntegers = List.generate(20, (_) => random.nextInt(9000) + 1000);
+
+    currentIndex = 0;
+
+    // Start timer to update QR every 5 sec
+    qrTimer?.cancel();
+    qrTimer = Timer.periodic(const Duration(seconds: 5), (timer) {
+      setState(() {
+        if (currentIndex < randomIntegers.length - 1) {
+          currentIndex++;
+        } else {
+          timer.cancel(); // stop after last integer
+        }
+      });
+    });
+
+    // Show dialog with QR
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) {
+        return StatefulBuilder(
+          builder: (context, setStateDialog) {
+            String qrData =
+                "$baseLink?class=${widget.className}&code=${randomIntegers[currentIndex]}";
+
+            // Timer inside dialog
+            qrTimer?.cancel();
+            qrTimer = Timer.periodic(const Duration(seconds: 5), (timer) {
+              if (currentIndex < randomIntegers.length - 1) {
+                currentIndex++;
+                setStateDialog(() {});
+              } else {
+                timer.cancel();
+              }
+            });
+
+            return AlertDialog(
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(14)),
+              title: const Text("Attendance Session"),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  QrImageView(
+                    data: qrData,
+                    version: QrVersions.auto,
+                    size: 200.0,
+                  ),
+                  const SizedBox(height: 10),
+                  Text(
+                    "Code: ${randomIntegers[currentIndex]}",
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  )
+                ],
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    qrTimer?.cancel();
+                    Navigator.of(context).pop();
+                  },
+                  child: const Text("End Session"),
+                ),
+              ],
+            );
+          },
+        );
+      },
     );
+  }
+
+  @override
+  void dispose() {
+    qrTimer?.cancel();
+    super.dispose();
   }
 
   @override
